@@ -86,7 +86,7 @@ export function formatTime(isoString?: string): string {
   try {
     const date = new Date(isoString)
     if (isNaN(date.getTime())) return '--:--'
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
   } catch {
     return '--:--'
   }
@@ -100,7 +100,7 @@ export function formatDate(isoString?: string): string {
   try {
     const date = new Date(isoString)
     if (isNaN(date.getTime())) return isoString
-    return date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
   } catch {
     return isoString
   }
@@ -114,7 +114,7 @@ export function formatDateTab(dStr: string, todayDateStr: string): string {
   try {
     const d = new Date(dStr)
     if (isNaN(d.getTime())) return dStr
-    return d.toLocaleDateString([], { month: 'short', day: 'numeric', weekday: 'short' })
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' })
   } catch {
     return dStr
   }
