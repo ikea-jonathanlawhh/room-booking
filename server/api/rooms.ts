@@ -59,7 +59,10 @@ export default defineEventHandler(async (event) => {
         : []
     }))
 
-    return { value: filteredRooms }
+    return { 
+      value: filteredRooms,
+      serverTime: Date.now()
+    }
   } catch (err: any) {
     const elapsed = Date.now() - startTime
     console.error(`[API] Live fetch failed after ${elapsed}ms: ${err.message}`)
