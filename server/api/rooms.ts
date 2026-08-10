@@ -4,10 +4,10 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
   const apiUrl = config.meetingRoomApiUrl || process.env.MEETING_ROOM_API_URL
 
-  if (!apiUrl) {
+  if (!apiUrl || !apiUrl.startsWith('http')) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'MEETING_ROOM_API_URL environment variable is not defined'
+      statusMessage: 'MEETING_ROOM_API_URL environment variable is not defined or invalid (must start with http:// or https://)'
     })
   }
 

@@ -11,9 +11,9 @@ export default defineNuxtConfig({
     '/api/rooms': { swr: 60 }
   },
   runtimeConfig: {
-    meetingRoomApiUrl: process.env.MEETING_ROOM_API_URL || '/api/rooms',
+    meetingRoomApiUrl: process.env.MEETING_ROOM_API_URL || '',
     public: {
-      meetingRoomApiUrl: process.env.MEETING_ROOM_API_URL || '/api/rooms',
+      meetingRoomApiUrl: '/api/rooms',
       headerTitle: defaultHeaderTitle
     }
   },
