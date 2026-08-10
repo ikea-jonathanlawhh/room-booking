@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#F3F3F0"/>
+  <!-- Top-left yellow shape -->
+  <path d="M 0,0 L 318,0 C 235,120 150,240 0,322 Z" fill="#F5CD00"/>
+  <!-- Bottom-right yellow shape -->
+  <path d="M 512,512 L 186,512 C 200,392 372,290 512,186 Z" fill="#F5CD00"/>
+</svg>
