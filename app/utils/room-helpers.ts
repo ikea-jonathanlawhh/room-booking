@@ -11,17 +11,32 @@ export function getCleanSubject(subject?: string): string {
 }
 
 /**
- * Returns YYYY-MM-DD in local time (prevents UTC timezone date shifts)
+ * Parses MS Graph ISO date string with Singapore Standard Time (+08:00) default
  */
-export function getLocalDateString(date: Date): string {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
+export function parseGraphDateTime(isoString?: string, timeZone?: string): Date {
+  if (!isoString) return new Date(NaN)
+  if (/Z|[+-]\d{2}:?\d{2}$/i.test(isoString)) {
+    return new Date(isoString)
+  }
+  const cleanIso = isoString.replace(/(\.\d{3})\d+/, '$1')
+  return new Date(`${cleanIso}+08:00`)
 }
 
 /**
- * Fast extraction of YYYY-MM-DD from an ISO date string
+ * Returns YYYY-MM-DD in Singapore timezone (prevents UTC timezone date shifts)
+ */
+export function getLocalDateString(date: Date = new Date()): string {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Singapore',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  })
+  return formatter.format(date)
+}
+
+/**
+ * Fast extraction of YYYY-MM-DD from an ISO date string in Singapore timezone
  */
 export function getItemLocalDateString(isoString?: string): string {
   if (!isoString) return ''
@@ -29,7 +44,7 @@ export function getItemLocalDateString(isoString?: string): string {
     return isoString.slice(0, 10)
   }
   try {
-    const d = new Date(isoString)
+    const d = parseGraphDateTime(isoString)
     if (isNaN(d.getTime())) return isoString.split('T')[0] || ''
     return getLocalDateString(d)
   } catch {
@@ -79,28 +94,41 @@ export function parseRoomName(scheduleId: string): { displayName: string; codeNa
 }
 
 /**
- * Formats ISO date string to 24h time string (e.g., "10:30")
+ * Formats ISO date string to 24h time string in Singapore timezone (e.g., "10:30")
  */
 export function formatTime(isoString?: string): string {
   if (!isoString) return '--:--'
   try {
-    const date = new Date(isoString)
+    const date = parseGraphDateTime(isoString)
     if (isNaN(date.getTime())) return '--:--'
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Singapore'
+    })
   } catch {
     return '--:--'
   }
 }
 
 /**
- * Formats ISO date string to full readable date (e.g., "Mon, Aug 10, 2026")
+ * Formats ISO date string to full readable date in Singapore timezone (e.g., "Mon, Aug 10, 2026")
  */
 export function formatDate(isoString?: string): string {
   if (!isoString) return ''
   try {
-    const date = new Date(isoString)
+    const date = /^\d{4}-\d{2}-\d{2}$/.test(isoString)
+      ? new Date(`${isoString}T00:00:00+08:00`)
+      : parseGraphDateTime(isoString)
     if (isNaN(date.getTime())) return isoString
-    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      timeZone: 'Asia/Singapore'
+    })
   } catch {
     return isoString
   }
@@ -112,9 +140,14 @@ export function formatDate(isoString?: string): string {
 export function formatDateTab(dStr: string, todayDateStr: string): string {
   if (dStr === todayDateStr) return `Today (${dStr.substring(5)})`
   try {
-    const d = new Date(dStr)
+    const d = new Date(`${dStr}T00:00:00+08:00`)
     if (isNaN(d.getTime())) return dStr
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' })
+    return d.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      weekday: 'short',
+      timeZone: 'Asia/Singapore'
+    })
   } catch {
     return dStr
   }
@@ -149,8 +182,8 @@ export function calculateRoomStatus(
     const itemDateStr = getItemLocalDateString(item.start.dateTime)
     if (itemDateStr !== viewDateStr) continue
 
-    const startMs = new Date(item.start.dateTime).getTime()
-    const endMs = new Date(item.end.dateTime).getTime()
+    const startMs = parseGraphDateTime(item.start.dateTime, item.start.timeZone).getTime()
+    const endMs = parseGraphDateTime(item.end.dateTime, item.end.timeZone).getTime()
     const cleanSubject = getCleanSubject(item.subject)
 
     parsedBookings.push({

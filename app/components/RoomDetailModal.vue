@@ -189,7 +189,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { RoomSchedule, ComputedRoomStatus, ScheduleItem } from '../types/room'
-import { formatTime, formatDate, getLocalDateString, getItemLocalDateString, getCleanSubject } from '../utils/room-helpers'
+import { formatTime, formatDate, getLocalDateString, getItemLocalDateString, getCleanSubject, parseGraphDateTime } from '../utils/room-helpers'
 
 const props = defineProps<{
   isOpen: boolean
@@ -229,8 +229,8 @@ const dayItems = computed<ParsedModalItem[]>(() => {
     if (!item.start?.dateTime || !item.end?.dateTime) continue
     if (getItemLocalDateString(item.start.dateTime) !== targetDateStr) continue
 
-    const startMs = new Date(item.start.dateTime).getTime()
-    const endMs = new Date(item.end.dateTime).getTime()
+    const startMs = parseGraphDateTime(item.start.dateTime, item.start.timeZone).getTime()
+    const endMs = parseGraphDateTime(item.end.dateTime, item.end.timeZone).getTime()
 
     result.push({
       ...item,
@@ -277,6 +277,7 @@ const timelineSlots = computed<TimelineSlot[]>(() => {
   const year = parts[0] ?? 2026
   const month = parts[1] ?? 1
   const day = parts[2] ?? 1
+  const pad = (n: number) => String(n).padStart(2, '0')
 
   // 1. Build 20 half-hour segments (08:00 to 18:00)
   interface Segment {
@@ -289,8 +290,11 @@ const timelineSlots = computed<TimelineSlot[]>(() => {
   for (let i = 0; i < 20; i++) {
     const hour = 8 + Math.floor(i / 2)
     const minute = (i % 2) * 30
-    const dStart = new Date(year, month - 1, day, hour, minute, 0)
-    const dEnd = new Date(year, month - 1, day, minute === 30 ? hour + 1 : hour, minute === 30 ? 0 : 30, 0)
+    const nextHour = minute === 30 ? hour + 1 : hour
+    const nextMin = minute === 30 ? 0 : 30
+
+    const dStart = new Date(`${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:00+08:00`)
+    const dEnd = new Date(`${year}-${pad(month)}-${pad(day)}T${pad(nextHour)}:${pad(nextMin)}:00+08:00`)
     const startMs = dStart.getTime()
     const endMs = dEnd.getTime()
 
@@ -304,7 +308,7 @@ const timelineSlots = computed<TimelineSlot[]>(() => {
       }
     }
 
-    const label = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+    const label = `${pad(hour)}:${pad(minute)}`
     segments.push({ label, minute, meetingIndex: meetingIdx })
   }
 
