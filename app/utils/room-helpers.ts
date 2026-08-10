@@ -82,13 +82,9 @@ export function parseRoomName(scheduleId: string): { displayName: string; codeNa
   let clean = prefix
     .replace(/([a-z])([A-Z])/g, '$1 $2')
     .replace(/[._-]/g, ' ')
+    .replace(/meeting\s*room/gi, '')
+    .replace(/\s+/g, ' ')
     .trim()
-
-  if (clean.toLowerCase().includes('small')) {
-    clean = clean.replace(/small meeting room/i, 'Small Meeting Room')
-  } else if (clean.toLowerCase().includes('meeting room')) {
-    clean = clean.replace(/meeting room/i, 'Meeting Room')
-  }
 
   return { displayName: clean, codeName }
 }
@@ -163,7 +159,7 @@ interface ParsedScheduleItem {
  * Computes room status based on current target time and selected schedule date
  */
 export function calculateRoomStatus(
-  room: RoomSchedule, 
+  room: RoomSchedule,
   targetTime: Date = new Date(),
   selectedDateStr?: string
 ): ComputedRoomStatus {
