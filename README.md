@@ -6,7 +6,7 @@ Real-time meeting room availability board.
 
 ### Prerequisites
 
-- Node.js `^18.18.0` or `>= 20.0.0` (Node 24 recommended)
+- Node.js `>= 24.0.0`
 - npm
 
 ### Installation
@@ -34,6 +34,11 @@ Available environment variables:
 | --- | --- | --- |
 | `MEETING_ROOM_API_URL` | Schedule API endpoint URL | `/api/rooms` |
 | `HEADER_TITLE` | Application header title | `Meeting Room Display` |
+
+### AI Setup
+`npx skills add nuxt/ui`
+
+`npx skills add https://github.com/onmax/nuxt-skills --skill nuxt`
 
 ### Development Server
 
