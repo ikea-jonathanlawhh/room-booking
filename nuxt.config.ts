@@ -3,7 +3,7 @@ const defaultHeaderTitle = process.env.NUXT_PUBLIC_HEADER_TITLE || process.env.H
 export default defineNuxtConfig({
   compatibilityDate: '2026-08-09',
   devtools: { enabled: false },
-  modules: ['@nuxt/ui'],
+  modules: ['@nuxt/ui', 'nuxt-auth-utils'],
   future: {
     compatibilityVersion: 4
   },
