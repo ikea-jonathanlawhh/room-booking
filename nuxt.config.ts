@@ -7,6 +7,14 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 4
   },
+  nitro: {
+    storage: {
+      data: {
+        driver: 'fs',
+        base: './.data/db'
+      }
+    }
+  },
   routeRules: {
     '/api/rooms': { swr: 60 }
   },
