@@ -8,8 +8,10 @@ interface Building {
   name: string
   description?: string
   roomCount?: number
-  createdAt: string
-  updatedAt: string
+  createdTimestamp: string
+  createdBy: string
+  updateTimestamp: string
+  updatedBy: string
 }
 
 interface Room {
@@ -19,8 +21,10 @@ interface Room {
   name: string
   email: string
   description?: string
-  createdAt: string
-  updatedAt: string
+  createdTimestamp: string
+  createdBy: string
+  updateTimestamp: string
+  updatedBy: string
 }
 
 // Reactive state

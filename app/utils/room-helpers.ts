@@ -163,7 +163,8 @@ export function calculateRoomStatus(
   targetTime: Date = new Date(),
   selectedDateStr?: string
 ): ComputedRoomStatus {
-  const { displayName, codeName } = parseRoomName(room.scheduleId)
+  const displayName = room.name || room.scheduleId
+  const codeName = room.name || room.scheduleId
   const items = room.scheduleItems || []
   const targetMs = targetTime.getTime()
 

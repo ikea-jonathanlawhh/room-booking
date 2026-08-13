@@ -27,6 +27,8 @@ export interface ScheduleItem {
 
 export interface RoomSchedule {
   scheduleId: string
+  name?: string
+  email?: string
   availabilityView?: string
   scheduleItems: ScheduleItem[]
   workingHours?: WorkingHours

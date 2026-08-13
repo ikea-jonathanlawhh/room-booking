@@ -1,4 +1,5 @@
-import { defineEventHandler, createError } from 'h3'
+import { defineEventHandler, readBody, createError } from 'h3'
+import { db, schema } from 'hub:db'
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
@@ -11,13 +12,40 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  let roomEmails: string[] = []
+
+  // Check if payload schedule was sent in POST request body
+  if (event.method === 'POST') {
+    try {
+      const body = await readBody(event).catch(() => null)
+      if (body && Array.isArray(body.schedule)) {
+        roomEmails = body.schedule
+      }
+    } catch { }
+  }
+
+  // Fetch room records from database
+  const dbRoomRecords = await db.select({ name: schema.rooms.name, email: schema.rooms.email }).from(schema.rooms)
+  const dbRoomMap = new Map(dbRoomRecords.map(r => [r.email.toLowerCase(), r]))
+
+  // Fallback: fetch room emails from database if none provided in body
+  if (roomEmails.length === 0) {
+    roomEmails = dbRoomRecords.map(r => r.email).filter(Boolean)
+  }
+
+  const postBody = {
+    schedule: roomEmails
+  }
+
   const startTime = Date.now()
   try {
     const response = await fetch(apiUrl, {
-      method: 'GET',
+      method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
+      body: JSON.stringify(postBody),
       signal: AbortSignal.timeout(20000)
     })
 
@@ -37,29 +65,35 @@ export default defineEventHandler(async (event) => {
     }
 
     // Only return what is needed
-    const filteredRooms = data.value.map((room: any) => ({
-      scheduleId: room.scheduleId || '',
-      workingHours: room.workingHours ? {
-        startTime: room.workingHours.startTime,
-        endTime: room.workingHours.endTime
-      } : undefined,
-      scheduleItems: Array.isArray(room.scheduleItems)
-        ? room.scheduleItems.map((item: any) => ({
-          subject: item.subject,
-          location: item.location,
-          start: item.start ? {
-            dateTime: item.start.dateTime,
-            timeZone: item.start.timeZone
-          } : undefined,
-          end: item.end ? {
-            dateTime: item.end.dateTime,
-            timeZone: item.end.timeZone
-          } : undefined
-        }))
-        : []
-    }))
+    const filteredRooms = data.value.map((room: any) => {
+      const emailKey = (room.scheduleId || '').toLowerCase()
+      const dbRoom = dbRoomMap.get(emailKey)
+      return {
+        scheduleId: room.scheduleId || '',
+        name: dbRoom ? dbRoom.name : (room.name || room.scheduleId),
+        email: dbRoom ? dbRoom.email : room.scheduleId,
+        workingHours: room.workingHours ? {
+          startTime: room.workingHours.startTime,
+          endTime: room.workingHours.endTime
+        } : undefined,
+        scheduleItems: Array.isArray(room.scheduleItems)
+          ? room.scheduleItems.map((item: any) => ({
+            subject: item.subject,
+            location: item.location,
+            start: item.start ? {
+              dateTime: item.start.dateTime,
+              timeZone: item.start.timeZone
+            } : undefined,
+            end: item.end ? {
+              dateTime: item.end.dateTime,
+              timeZone: item.end.timeZone
+            } : undefined
+          }))
+          : []
+      }
+    })
 
-    return { 
+    return {
       value: filteredRooms,
       serverTime: Date.now()
     }

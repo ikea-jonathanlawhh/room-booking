@@ -197,7 +197,9 @@ useHead({
 })
 
 // Fetch live data exclusively from Nitro API route (/api/rooms)
-const { data, pending, error, refresh: refreshData } = await useFetch<{ value: RoomSchedule[], serverTime?: number }>('/api/rooms')
+const { data, pending, error, refresh: refreshData } = await useFetch<{ value: RoomSchedule[], serverTime?: number }>('/api/rooms', {
+  method: 'POST'
+})
 
 // State
 const searchQuery = ref('')

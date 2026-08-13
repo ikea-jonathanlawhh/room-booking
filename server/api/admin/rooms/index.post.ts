@@ -1,6 +1,11 @@
 import { defineEventHandler, readBody, createError } from 'h3'
+import { db, schema } from 'hub:db'
+import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
+  const session = await requireUserSession(event)
+  const userEmail = session.user.email
+
   const body = await readBody(event)
 
   if (!body) {
@@ -26,32 +31,44 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid email address format' })
   }
 
-  const buildings = await getBuildings()
-  const buildingExists = buildings.some(b => b.id === buildingId)
-  if (!buildingExists) {
+  const buildingIdTrimmed = buildingId.trim()
+  const emailTrimmed = email.trim().toLowerCase()
+
+  // Verify building exists in database
+  const buildingExists = await db
+    .select()
+    .from(schema.buildings)
+    .where(eq(schema.buildings.id, buildingIdTrimmed))
+    .limit(1)
+
+  if (buildingExists.length === 0) {
     throw createError({ statusCode: 404, statusMessage: 'Selected building does not exist' })
   }
 
-  const rooms = await getRooms()
+  // Check email uniqueness in database
+  const emailExists = await db
+    .select()
+    .from(schema.rooms)
+    .where(eq(schema.rooms.email, emailTrimmed))
+    .limit(1)
 
-  // Check email uniqueness
-  const emailExists = rooms.some(r => r.email.toLowerCase() === email.trim().toLowerCase())
-  if (emailExists) {
+  if (emailExists.length > 0) {
     throw createError({ statusCode: 409, statusMessage: 'Room email address is already in use' })
   }
 
-  const newRoom: Room = {
+  const newRoom = {
     id: `rm_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-    buildingId: buildingId.trim(),
+    buildingId: buildingIdTrimmed,
     name: name.trim(),
-    email: email.trim().toLowerCase(),
-    description: description?.trim() || undefined,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    email: emailTrimmed,
+    description: description?.trim() || null,
+    createdBy: userEmail,
+    updatedBy: userEmail,
+    createdTimestamp: new Date(),
+    updateTimestamp: new Date()
   }
 
-  rooms.push(newRoom)
-  await saveRooms(rooms)
+  await db.insert(schema.rooms).values(newRoom)
 
   return {
     value: newRoom
