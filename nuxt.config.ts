@@ -7,6 +7,7 @@ export default defineNuxtConfig({
   hub: {
     db: {
       dialect: 'mysql',
+      applyMigrationsDuringBuild: false,
       connection: {
         ssl: {
           rejectUnauthorized: false
