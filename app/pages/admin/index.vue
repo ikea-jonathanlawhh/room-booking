@@ -28,10 +28,6 @@ const handleLogout = async () => {
           <div>
             <h1 class="text-xl font-extrabold text-[#2A2825] tracking-tight flex items-center gap-2">
               Admin Portal
-              <span
-                class="text-xs px-2 py-0.5 rounded-full bg-[#FFF5C2] text-[#6B5900] border border-[#E6C200] font-semibold">
-                Placeholder Page
-              </span>
             </h1>
             <p class="text-xs text-[#736D66] font-medium">Meeting Room Display System</p>
           </div>
@@ -39,13 +35,6 @@ const handleLogout = async () => {
 
         <!-- Right Side Nav Actions -->
         <div class="flex items-center gap-3">
-          <NuxtLink to="/room"
-            class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#FAF8F5] hover:bg-[#EFEBE4] text-[#2A2825] text-xs font-semibold border border-[#E2DACF] transition-colors">
-            <svg class="w-4 h-4 text-[#736D66]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Display Board
-          </NuxtLink>
 
           <button v-if="loggedIn" @click="handleLogout"
             class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#F5E6E3] hover:bg-[#EAD7D4] text-[#8C4E43] text-xs font-semibold border border-[#E5C7C2] transition-colors">
@@ -96,18 +85,6 @@ const handleLogout = async () => {
           </div>
         </div>
 
-        <!-- Placeholder Features Notice -->
-        <div class="p-4 rounded-2xl bg-[#FFF8D6] border border-[#FBDA0C] text-xs text-[#6B5900] flex items-start gap-3">
-          <svg class="w-5 h-5 text-[#6B5900] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div>
-            <strong class="font-bold block text-sm">Future Development Notice</strong>
-            <span>This administration portal is currently in placeholder status. The modules below outline features
-              scheduled for upcoming releases.</span>
-          </div>
-        </div>
 
         <!-- Placeholder Cards Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

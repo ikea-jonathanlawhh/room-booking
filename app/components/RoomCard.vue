@@ -7,8 +7,8 @@
           <h3 class="text-lg font-bold text-[#2A2825] group-hover:text-[#D9B500] transition-colors line-clamp-1">
             {{ status.displayName }}
           </h3>
-          <p class="text-xs text-[#736D66] font-mono truncate max-w-[220px]">
-            {{ room.scheduleId }}
+          <p v-if="room.description" class="text-xs text-[#736D66] truncate max-w-[220px]">
+            {{ room.description }}
           </p>
         </div>
 

@@ -131,20 +131,24 @@ const handleSaveBuilding = async () => {
 
   buildingSubmitting.value = true
   try {
+    const payload = {
+      name: buildingForm.value.name.trim().toUpperCase(),
+      description: buildingForm.value.description?.trim() || ''
+    }
     if (editingBuilding.value) {
       // Update
       await $fetch(`/api/admin/buildings/${editingBuilding.value.id}`, {
         method: 'PUT',
-        body: buildingForm.value
+        body: payload
       })
-      successMessage.value = `Building "${buildingForm.value.name}" updated successfully.`
+      successMessage.value = `Building "${payload.name}" updated successfully.`
     } else {
       // Create
       await $fetch('/api/admin/buildings', {
         method: 'POST',
-        body: buildingForm.value
+        body: payload
       })
-      successMessage.value = `Building "${buildingForm.value.name}" created successfully.`
+      successMessage.value = `Building "${payload.name}" created successfully.`
     }
     isBuildingModalOpen.value = false
     await fetchData()

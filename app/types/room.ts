@@ -29,6 +29,7 @@ export interface RoomSchedule {
   scheduleId: string
   name?: string
   email?: string
+  description?: string
   availabilityView?: string
   scheduleItems: ScheduleItem[]
   workingHours?: WorkingHours

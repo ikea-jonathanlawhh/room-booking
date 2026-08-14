@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Building name is required' })
   }
 
-  const nameTrimmed = body.name.trim()
+  const nameTrimmed = body.name.trim().toUpperCase()
 
   // Verify building exists
   const existingList = await db

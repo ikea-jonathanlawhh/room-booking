@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Fetch room records from database
-  const dbRoomRecords = await db.select({ name: schema.rooms.name, email: schema.rooms.email }).from(schema.rooms)
+  const dbRoomRecords = await db.select({ name: schema.rooms.name, email: schema.rooms.email, description: schema.rooms.description }).from(schema.rooms)
   const dbRoomMap = new Map(dbRoomRecords.map(r => [r.email.toLowerCase(), r]))
 
   // Fallback: fetch room emails from database if none provided in body
@@ -72,6 +72,7 @@ export default defineEventHandler(async (event) => {
         scheduleId: room.scheduleId || '',
         name: dbRoom ? dbRoom.name : (room.name || room.scheduleId),
         email: dbRoom ? dbRoom.email : room.scheduleId,
+        description: dbRoom ? dbRoom.description : (room.description || undefined),
         workingHours: room.workingHours ? {
           startTime: room.workingHours.startTime,
           endTime: room.workingHours.endTime

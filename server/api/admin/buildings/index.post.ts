@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const nameTrimmed = body.name.trim()
+  const nameTrimmed = body.name.trim().toUpperCase()
 
   // Check for duplicate name (case-insensitive depending on database collation, standard eq)
   const existing = await db
