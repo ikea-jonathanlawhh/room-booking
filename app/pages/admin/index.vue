@@ -29,7 +29,7 @@ const handleLogout = async () => {
             <h1 class="text-xl font-extrabold text-[#2A2825] tracking-tight flex items-center gap-2">
               Admin Portal
             </h1>
-            <p class="text-xs text-[#736D66] font-medium">Meeting Room Display System</p>
+            <p class="text-xs text-[#736D66] font-medium">Office Information Display System</p>
           </div>
         </div>
 
@@ -57,8 +57,7 @@ const handleLogout = async () => {
 
         <!-- User Info Card -->
         <div class="japandi-card rounded-2xl p-6 border border-[#E2DACF] bg-[#FAF8F5]">
-          <div
-            class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
               <!-- Avatar Circle -->
               <div
@@ -99,14 +98,10 @@ const handleLogout = async () => {
                     d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4m-4 0H7" />
                 </svg>
               </div>
-              <span
-                class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#FFF5C2] text-[#6B5900] border border-[#E6C200]">
-                Active
-              </span>
             </div>
             <h3 class="text-base font-bold text-[#2A2825]">Room & Facility Management</h3>
             <p class="text-xs text-[#736D66] mt-1 leading-relaxed">
-              Configure buildings, room names, mailboxes, and descriptions.
+              Configure buildings and rooms.
             </p>
             <div class="mt-4 pt-4 border-t border-[#E2DACF] flex items-center justify-end text-xs text-[#736D66]">
               <NuxtLink to="/admin/room"
@@ -116,7 +111,7 @@ const handleLogout = async () => {
             </div>
           </div>
 
-          </div>
+        </div>
       </div>
 
       <!-- LOGGED OUT VIEW -->
