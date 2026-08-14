@@ -6,9 +6,10 @@ export default defineEventHandler(async (event) => {
   const apiUrl = config.meetingRoomApiUrl || process.env.MEETING_ROOM_API_URL
 
   if (!apiUrl || !apiUrl.startsWith('http')) {
+    console.error('[API] Configuration error: MEETING_ROOM_API_URL is missing or invalid')
     throw createError({
       statusCode: 500,
-      statusMessage: 'MEETING_ROOM_API_URL environment variable is not defined or invalid (must start with http:// or https://)'
+      statusMessage: 'Meeting room service configuration error'
     })
   }
 
@@ -50,17 +51,19 @@ export default defineEventHandler(async (event) => {
     })
 
     if (!response.ok) {
+      console.error(`[API] Remote endpoint error: ${response.status} ${response.statusText}`)
       throw createError({
-        statusCode: response.status,
-        statusMessage: `Remote API error: ${response.statusText}`
+        statusCode: 502,
+        statusMessage: 'Failed to retrieve schedule data from upstream service'
       })
     }
 
     const data = await response.json()
     if (!data || typeof data !== 'object' || !Array.isArray(data.value)) {
+      console.error('[API] Remote endpoint returned invalid data structure')
       throw createError({
         statusCode: 502,
-        statusMessage: 'Invalid response format received from dynamic API endpoint'
+        statusMessage: 'Invalid response format received from upstream service'
       })
     }
 
@@ -100,10 +103,13 @@ export default defineEventHandler(async (event) => {
     }
   } catch (err: any) {
     const elapsed = Date.now() - startTime
-    console.error(`[API] Live fetch failed after ${elapsed}ms: ${err.message}`)
+    console.error(`[API] Live fetch failed after ${elapsed}ms:`, err)
+    if (err.statusCode && err.statusMessage) {
+      throw err
+    }
     throw createError({
-      statusCode: err.statusCode || 500,
-      statusMessage: `Failed to fetch meeting rooms: ${err.message}`
+      statusCode: 500,
+      statusMessage: 'Failed to fetch meeting rooms'
     })
   }
 })
